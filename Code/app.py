@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
+# Початкові дані
 users = {
     'user1': {'user_id': '1', 'user_name': 'John Doe'},
     'user2': {'user_id': '2', 'user_name': 'Alice Johnson'},
@@ -22,13 +23,13 @@ records = {
 
 
 @app.route('/')
-def hello_world():  # put application's code here
+def hello_world():
     return 'This is Lab-work #2'
 
 
-#            #----------------------------------------------------------------------------------------------------------
-# Користувач #----------------------------------------------------------------------------------------------------------
-#            #----------------------------------------------------------------------------------------------------------
+#             #---------------------------------------------------------------------------------------------------------
+# Користувачі #---------------------------------------------------------------------------------------------------------
+#             #---------------------------------------------------------------------------------------------------------
 
 
 # Вивід списку користувачів
@@ -66,13 +67,55 @@ def delete_user(user_id):
 
     return jsonify({'error': 'User not found'}), 404
 
+
+#            #----------------------------------------------------------------------------------------------------------
+# Категорії  #----------------------------------------------------------------------------------------------------------
+#            #----------------------------------------------------------------------------------------------------------
+
+
 # Вивід списку категорій
 @app.route('/category', methods=['GET'])
 def get_categories():
     return list(categories)
 
 
+# Створення категорії
+@app.route('/category', methods=['POST'])
+def create_category():
+    category_data = request.get_json()
+    category_name = category_data.get('category_name')
+    if category_name is None:
+        return jsonify({'error': 'Category name is required'}), 400
+    category_id = uuid.uuid4().hex
+    category = {"id": category_id, **category_data}
+    categories[category_name] = category
+    return jsonify(category)
+
+
+# Видалення категорії по ID
+@app.route('/category/<category_id>', methods=['DELETE'])
+def delete_category(category_id):
+    for category_key, category in categories.items():
+        if category['category_id'] == category_id:
+            deleted_category = categories.pop(category_key)
+            return jsonify({'message': 'Category deleted successfully', 'category': deleted_category})
+
+    return jsonify({'error': 'Category not found'}), 404
+
+
+#            #----------------------------------------------------------------------------------------------------------
+# Записи     #----------------------------------------------------------------------------------------------------------
+#            #----------------------------------------------------------------------------------------------------------
+
+
 # Створення запису
+
+
+
+# Вивід списку записів по певному користувачу
+
+
+
 
 
 if __name__ == '__main__':
