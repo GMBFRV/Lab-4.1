@@ -47,9 +47,10 @@ def get_user(user_id):
     return jsonify({'error': 'User not found'}), 404
 
 
-# Отримання списку записів по певному користувачу
+# Створення запису
 
 
+# Створення користувача
 @app.route('/user', methods=['POST'])
 def create_user():
     user_data = request.get_json()
