@@ -1,17 +1,54 @@
 import uuid
-from flask import Flask, request
+
+from flask import Flask, request, jsonify
 
 app = Flask(__name__)
 
 users = {
-    'user1': {'id': '1', 'name': 'John Doe'},
-    'user2': {'id': '2', 'name': 'Alice Johnson'},
-    'user3': {'id': '3', 'name': 'Mike Bernard'},
+    'user1': {'user_id': '1', 'user_name': 'John Doe'},
+    'user2': {'user_id': '2', 'user_name': 'Alice Johnson'},
+    'user3': {'user_id': '3', 'user_name': 'Mike Bernard'}, }
+
+categories = {
+    'car': {'category_id': '1', 'category_name': 'car'},
+    'phone': {'category_id': '2', 'category_name': 'phone'},
+    'watch': {'category_id': '3', 'category_name': 'watch'}, }
+
+records = {
+    'record1': {'record_id': '1', 'user_id': '1', 'category_id': '1', 'creation_data': '23-11-23', 'cost': '1000$'},
+    'record2': {'record_id': '2', 'user_id': '2', 'category_id': '2', 'creation_data': '24-11-23', 'cost': '2000$'},
+    'record3': {'record_id': '3', 'user_id': '3', 'category_id': '3', 'creation_data': '23-11-23', 'cost': '3000$'}
 }
+
 
 @app.route('/')
 def hello_world():  # put application's code here
-    return 'Hello World!'
+    return 'This is Lab-work #2'
+
+
+# Вивід списку користувачів
+@app.route('/users', methods=['GET'])
+def get_users():
+    return list(users.values())
+
+
+# Вивід списку категорій
+@app.route('/category', methods=['GET'])
+def get_categories():
+    return list(categories)
+
+
+# Вивід конкретного користувача по ID
+@app.route('/user/<user_id>', methods=['GET'])
+def get_user(user_id):
+    for user_key, user in users.items():
+        if user['user_id'] == user_id:
+            return jsonify(user)
+    return jsonify({'error': 'User not found'}), 404
+
+
+# Отримання списку записів по певному користувачу
+
 
 @app.route('/user', methods=['POST'])
 def create_user():
@@ -21,11 +58,6 @@ def create_user():
     users[user_id] = user
     return user
 
-@app.route('/users', methods=['GET'])
-def get_users():
-    return list(users.values())
-
 
 if __name__ == '__main__':
     app.run()
-
