@@ -26,16 +26,15 @@ def hello_world():  # put application's code here
     return 'This is Lab-work #2'
 
 
+#            #----------------------------------------------------------------------------------------------------------
+# Користувач #----------------------------------------------------------------------------------------------------------
+#            #----------------------------------------------------------------------------------------------------------
+
+
 # Вивід списку користувачів
 @app.route('/users', methods=['GET'])
 def get_users():
     return list(users.values())
-
-
-# Вивід списку категорій
-@app.route('/category', methods=['GET'])
-def get_categories():
-    return list(categories)
 
 
 # Вивід конкретного користувача по ID
@@ -47,9 +46,6 @@ def get_user(user_id):
     return jsonify({'error': 'User not found'}), 404
 
 
-# Створення запису
-
-
 # Створення користувача
 @app.route('/user', methods=['POST'])
 def create_user():
@@ -58,6 +54,25 @@ def create_user():
     user = {"id": user_id, **user_data}
     users[user_id] = user
     return user
+
+
+# Видалення користувача
+@app.route('/user/<user_id>', methods=['DELETE'])
+def delete_user(user_id):
+    for user_key, user in users.items():
+        if user['user_id'] == user_id:
+            deleted_user = users.pop(user_key)
+            return jsonify({'message': 'User deleted successfully', 'user': deleted_user})
+
+    return jsonify({'error': 'User not found'}), 404
+
+# Вивід списку категорій
+@app.route('/category', methods=['GET'])
+def get_categories():
+    return list(categories)
+
+
+# Створення запису
 
 
 if __name__ == '__main__':
