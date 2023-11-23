@@ -16,9 +16,9 @@ categories = {
     'watch': {'category_id': '3', 'category_name': 'watch'}, }
 
 records = {
-    'record1': {'record_id': '1', 'user_id': '1', 'category_id': '1', 'creation_data': '23-11-23', 'cost': '1000$'},
-    'record2': {'record_id': '2', 'user_id': '2', 'category_id': '2', 'creation_data': '24-11-23', 'cost': '2000$'},
-    'record3': {'record_id': '3', 'user_id': '3', 'category_id': '3', 'creation_data': '23-11-23', 'cost': '3000$'}
+    'Music': {'record_id': '1', 'user_id': '1', 'category_id': '1', 'creation_data': '23-11-23', 'cost': '1000$'},
+    'Games': {'record_id': '2', 'user_id': '2', 'category_id': '2', 'creation_data': '24-11-23', 'cost': '2000$'},
+    'Food': {'record_id': '3', 'user_id': '3', 'category_id': '3', 'creation_data': '23-11-23', 'cost': '3000$'}
 }
 
 
@@ -109,13 +109,39 @@ def delete_category(category_id):
 
 
 # Створення запису
+@app.route('/record', methods=['POST'])
+def create_record():
+    record_data = request.get_json()
+    record_name = record_data.get('record_id')
+    if record_name is None:
+        return jsonify({'error': 'Record ID is required'}), 400
+    record_id = uuid.uuid4().hex
+    record = {"id": record_id, **record_data}
+    records[record_name] = record
+    return jsonify(record)
 
 
+# Вивід списку записів по певному користувачу та/або категорії
+@app.route('/record', methods=['GET'])
+def get_records():
+    user_id = request.args.get('user_id')
+    category_id = request.args.get('category_id')
+    if not user_id and not category_id:
+        return jsonify({'error': 'At least one of user_id or category_id is required'}), 400
+    filtered_records = [record for record_id, record in records.items() if
+                        (not user_id or record['user_id'] == user_id) and
+                        (not category_id or record['category_id'] == category_id)]
+    return jsonify(filtered_records)
 
-# Вивід списку записів по певному користувачу
 
-
-
+# Видалення запису
+@app.route('/record/<record_id>', methods=['DELETE'])
+def delete_record(record_id):
+    for record_key, record in records.items():
+        if record['record_id'] == record_id:
+            deleted_record = records.pop(record_key)
+            return jsonify({'message': 'record deleted successfully', 'category': deleted_record})
+    return jsonify({'error': 'Record not found'}), 404
 
 
 if __name__ == '__main__':
