@@ -11,20 +11,25 @@ users = {
     'user3': {'user_id': '3', 'user_name': 'Mike Bernard'}, }
 
 categories = {
-    'car': {'category_id': '1', 'category_name': 'car'},
-    'phone': {'category_id': '2', 'category_name': 'phone'},
-    'watch': {'category_id': '3', 'category_name': 'watch'}, }
+    '1': {'category_id': '1', 'category_name': 'car'},
+    '2': {'category_id': '2', 'category_name': 'phone'},
+    '3': {'category_id': '3', 'category_name': 'watch'},
+    '4': {'category_id': '4', 'category_name': 'Watches', 'visibility': 'public', 'owner_id': '2'},
+    '5': {'category_id': '5', 'category_name': 'House', 'visibility': 'public', 'owner_id': '1'},
+    '6': {'category_id': '6', 'category_name': 'Healthcare', 'visibility': 'private', 'owner_id': '3'}
+}
 
 records = {
     'Music': {'record_id': '1', 'user_id': '1', 'category_id': '1', 'creation_data': '23-11-23', 'cost': '1000$'},
     'Games': {'record_id': '2', 'user_id': '2', 'category_id': '2', 'creation_data': '24-11-23', 'cost': '2000$'},
-    'Food': {'record_id': '3', 'user_id': '3', 'category_id': '3', 'creation_data': '23-11-23', 'cost': '3000$'}
-}
+    'Food': {'record_id': '3', 'user_id': '3', 'category_id': '3', 'creation_data': '23-11-23', 'cost': '3000$'}}
 
+
+@app.route('/custom_categories')
 
 @app.route('/')
 def hello_world():
-    return 'This is Lab-work #2'
+    return 'This is Lab-work #3'
 
 
 #             #---------------------------------------------------------------------------------------------------------
@@ -87,7 +92,7 @@ def create_category():
     if category_name is None:
         return jsonify({'error': 'Category name is required'}), 400
     category_id = uuid.uuid4().hex
-    category = {"id": category_id, **category_data}
+    category = {"category_id": category_id, **category_data}
     categories[category_name] = category
     return jsonify(category)
 
@@ -113,12 +118,25 @@ def delete_category(category_id):
 def create_record():
     record_data = request.get_json()
     record_name = record_data.get('record_id')
+    category_id = record_data.get('category_id')
     if record_name is None:
         return jsonify({'error': 'Record ID is required'}), 400
+    if category_id is None:
+        return jsonify({'error': 'Category ID is required'}), 400
+    category = categories.get(category_id)
+    if category is None:
+        return jsonify({'error': 'Category not found'}), 404
+    visibility = category.get('visibility', 'public')
+    # Перевірка видимості категорії
+    if visibility == 'private':
+        user_id = record_data.get('user_id')
+        if user_id != category.get('owner_id'):
+            return jsonify({'error': 'You are not allowed to use this category'}), 403
     record_id = uuid.uuid4().hex
     record = {"id": record_id, **record_data}
     records[record_name] = record
     return jsonify(record)
+
 
 
 # Вивід списку записів по певному користувачу та/або категорії
