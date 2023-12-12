@@ -5,19 +5,19 @@ ENV PYTHONUNBUFFERED 1
 
 WORKDIR /app
 
-# Копируем зависимости в контейнер
+# Копіюємо залежності в контейнер
 COPY requirements.txt /app/
 
-# Устанавливаем зависимости
+# Встановлюємо залежності
 RUN pip install --upgrade pip
 RUN pip install -r requirements.txt
 
-# Копируем текущий каталог в контейнер в /app
+# Копіюємо вміст поточного каталогу в контейнер в /app
 COPY . /app/
 
-# Определяем переменные окружения Flask
-ENV FLASK_APP=app.py
+# Опреділяємо змінні середовища Flask
+ENV FLASK_APP=project/app.py
 ENV FLASK_RUN_HOST=0.0.0.0
 
-# Запускаем приложение
+# Запускаємо додаток
 CMD ["flask", "run"]
