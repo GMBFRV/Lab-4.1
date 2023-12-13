@@ -43,7 +43,7 @@ class CategorySchema(Schema):
 
 
 class RecordSchema(Schema):
-    record_id = fields.String(required=True)
+    id = fields.String(required=True)
     user_id = fields.String(required=True)
     category_id = fields.String(required=True)
     creation_data = fields.String(required=True)
@@ -164,7 +164,7 @@ def create_record():
         if user_id != category.owner_id:
             return jsonify({'error': 'You are not allowed to use this category'}), 403
 
-    new_record = Record(record_id=record_data['record_id'],
+    new_record = Record(id=record_data['id'],
                         user_id=record_data['user_id'],
                         category_id=record_data['category_id'],
                         creation_data=record_data['creation_data'],
